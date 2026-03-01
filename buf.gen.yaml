@@ -1,0 +1,11 @@
+version: v1
+plugins:
+  # Generates the base messages/types (ES modules)
+  - plugin: buf.build/bufbuild/es:v1.10.0
+    out: src/gen
+    opt: target=ts
+
+  # Generates the Connect-ES service clients
+  - plugin: buf.build/connectrpc/es:v1.4.0
+    out: src/gen
+    opt: target=ts
