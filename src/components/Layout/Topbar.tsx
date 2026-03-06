@@ -21,7 +21,10 @@ const Topbar: React.FC = () => {
     };
 
     const handleLogout = () => {
-        // For now, just navigate to login
+        // Clear stored tokens
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        // Redirect to login
         navigate('/login');
     };
 
