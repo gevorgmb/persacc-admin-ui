@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { client } from '../api/client';
 import '../styles/auth.css';
 
 const Register: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -10,22 +12,45 @@ const Register: React.FC = () => {
         birthday: '',
         phone: '',
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Action implementation will be provided later
-        console.log('Registering with:', formData);
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await client.oAuthRegister({
+                email: formData.email,
+                password: formData.password,
+                fullName: formData.name,
+                phone: formData.phone,
+                birthday: formData.birthday,
+            });
+
+            if (response.ok) {
+                navigate('/login');
+            } else {
+                setError(response.message || 'Registration failed');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="auth-container">
             <div className="auth-card">
                 <h2>Create Account</h2>
+                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
@@ -39,6 +64,7 @@ const Register: React.FC = () => {
                             placeholder="Enter your name"
                             value={formData.name}
                             onChange={handleChange}
+                            disabled={loading}
                         />
                     </div>
                     <div className="form-group">
@@ -51,6 +77,7 @@ const Register: React.FC = () => {
                             placeholder="name@company.com"
                             value={formData.email}
                             onChange={handleChange}
+                            disabled={loading}
                         />
                     </div>
                     <div className="form-group">
@@ -63,6 +90,7 @@ const Register: React.FC = () => {
                             placeholder="••••••••"
                             value={formData.password}
                             onChange={handleChange}
+                            disabled={loading}
                         />
                     </div>
                     <div className="form-group">
@@ -73,6 +101,7 @@ const Register: React.FC = () => {
                             name="birthday"
                             value={formData.birthday}
                             onChange={handleChange}
+                            disabled={loading}
                         />
                     </div>
                     <div className="form-group">
@@ -85,10 +114,15 @@ const Register: React.FC = () => {
                             placeholder="+1 (555) 000-0000"
                             value={formData.phone}
                             onChange={handleChange}
+                            disabled={loading}
                         />
                     </div>
-                    <button type="submit" className="submit-btn">
-                        Register
+                    <button
+                        type="submit"
+                        className={`submit-btn ${loading ? 'loading' : ''}`}
+                        disabled={loading}
+                    >
+                        {loading ? '' : 'Register'}
                     </button>
                 </form>
                 <div className="auth-footer">
