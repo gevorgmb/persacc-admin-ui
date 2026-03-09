@@ -4,30 +4,36 @@ import Login from './pages/Login';
 import MainLayout from './components/Layout/MainLayout';
 import Company from './pages/Company';
 import Customers from './pages/Customers';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes (Authenticated Layout) */}
-        <Route element={<MainLayout />}>
-          <Route path="/company" element={<Company />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="/dashboard" element={<Navigate to="/company" replace />} />
-        </Route>
+          {/* Protected Routes (Authenticated Layout) */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/company" element={<Company />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/dashboard" element={<Navigate to="/company" replace />} />
+            </Route>
+          </Route>
 
-        {/* Default route to /login for now */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Default route to /login for now */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Catch-all redirect to login or dashboard */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+          {/* Catch-all redirect to login or dashboard */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
