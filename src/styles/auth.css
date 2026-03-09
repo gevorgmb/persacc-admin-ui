@@ -6,7 +6,7 @@
     --text-primary: #ffffff;
     --text-secondary: #e0e0e0;
     --accent-color: #f5f7fa;
-    --error-color: #ff4d4d;
+    --error-color: #ff8080;
 }
 
 .auth-container {
@@ -84,6 +84,32 @@
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
 }
 
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.password-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
 .submit-btn {
     width: 100%;
     padding: 14px;
@@ -129,13 +155,14 @@
 }
 
 .error-message {
-    background: rgba(255, 77, 77, 0.1);
+    background: rgba(255, 128, 128, 0.2);
     border: 1px solid var(--error-color);
-    color: var(--error-color);
+    color: #ffd6d6;
     padding: 12px;
     border-radius: 12px;
     margin-bottom: 20px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 600;
     text-align: center;
     animation: shake 0.4s ease-in-out;
 }

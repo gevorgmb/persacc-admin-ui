@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { client } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
+    const { login, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/company');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -29,9 +38,8 @@ const Login: React.FC = () => {
             });
 
             if (response.accessToken) {
-                localStorage.setItem('access_token', response.accessToken);
-                localStorage.setItem('refresh_token', response.refreshToken);
-                navigate('/company');
+                login(response.accessToken, response.refreshToken);
+                // navigate('/company'); // Handled by useEffect
             } else {
                 setError('Invalid credentials or missing token');
             }
@@ -63,16 +71,26 @@ const Login: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            disabled={loading}
-                        />
+                        <div className="password-input-wrapper">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                name="password"
+                                required
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={handleChange}
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? 'Hide' : 'Show'}
+                            </button>
+                        </div>
                     </div>
                     <button
                         type="submit"

@@ -26,14 +26,14 @@ export class OAuthRegisterRequest extends Message<OAuthRegisterRequest> {
   fullName = "";
 
   /**
-   * @generated from field: string phone = 4;
+   * @generated from field: optional string phone = 4;
    */
-  phone = "";
+  phone?: string;
 
   /**
-   * @generated from field: string birthday = 5;
+   * @generated from field: optional string birthday = 5;
    */
-  birthday = "";
+  birthday?: string;
 
   constructor(data?: PartialMessage<OAuthRegisterRequest>) {
     super();
@@ -46,8 +46,8 @@ export class OAuthRegisterRequest extends Message<OAuthRegisterRequest> {
     { no: 1, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "full_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "birthday", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 5, name: "birthday", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): OAuthRegisterRequest {

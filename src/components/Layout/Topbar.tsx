@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './MainLayout.css';
 
 const Topbar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [currentTime, setCurrentTime] = useState(new Date());
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -21,10 +23,7 @@ const Topbar: React.FC = () => {
     };
 
     const handleLogout = () => {
-        // Clear stored tokens
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        // Redirect to login
+        logout();
         navigate('/login');
     };
 
