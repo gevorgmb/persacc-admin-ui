@@ -6,7 +6,7 @@ import './MainLayout.css';
 const Topbar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
     const [currentTime, setCurrentTime] = useState(new Date());
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -27,6 +27,16 @@ const Topbar: React.FC = () => {
         navigate('/login');
     };
 
+    const getInitials = (name: string) => {
+        if (!name) return '??';
+        return name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+    };
+
     return (
         <header className="topbar glass-panel">
             <div className="topbar-left">
@@ -38,10 +48,11 @@ const Topbar: React.FC = () => {
             </div>
             <div className="topbar-right">
                 <div className="user-profile" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                    <span className="username">Admin User</span>
-                    <div className="user-avatar">AD</div>
+                    <span className="username">{user?.name || 'Loading...'}</span>
+                    <div className="user-avatar">{user ? getInitials(user.name) : '??'}</div>
                     {dropdownOpen && (
                         <div className="user-dropdown glass-panel">
+                            {user && <div className="user-email">{user.email}</div>}
                             <button onClick={handleLogout} className="logout-btn">Logout</button>
                         </div>
                     )}
