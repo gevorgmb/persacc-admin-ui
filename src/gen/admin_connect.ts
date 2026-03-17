@@ -9,6 +9,7 @@ import { OAuthRefreshRequest, OAuthRefreshResponse, OAuthRegisterRequest, OAuthR
 import { CreateCustomerRequest, CreateCustomerResponse, DeleteCustomerRequest, DeleteCustomerResponse, GetCustomerRequest, GetCustomerResponse, ListCustomersRequest, ListCustomersResponse, UpdateCustomerRequest, UpdateCustomerResponse } from "./customer_pb.js";
 import { CreateRoleRequest, CreateRoleResponse, DeleteRoleRequest, DeleteRoleResponse, GetRoleRequest, GetRoleResponse, ListRolesRequest, ListRolesResponse, UpdateRoleRequest, UpdateRoleResponse } from "./role_pb.js";
 import { CreatePermissionRequest, CreatePermissionResponse, DeletePermissionRequest, DeletePermissionResponse, GetPermissionRequest, GetPermissionResponse, ListPermissionsRequest, ListPermissionsResponse, UpdatePermissionRequest, UpdatePermissionResponse } from "./permission_pb.js";
+import { CreateOrganizationRequest, CreateOrganizationResponse, DeleteOrganizationRequest, DeleteOrganizationResponse, GetOrganizationRequest, GetOrganizationResponse, ListOrganizationsRequest, ListOrganizationsResponse, UpdateOrganizationRequest, UpdateOrganizationResponse } from "./organization_pb.js";
 
 /**
  * @generated from service admin.AdminService
@@ -239,6 +240,51 @@ export const AdminService = {
       name: "ListPermissions",
       I: ListPermissionsRequest,
       O: ListPermissionsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.CreateOrganization
+     */
+    createOrganization: {
+      name: "CreateOrganization",
+      I: CreateOrganizationRequest,
+      O: CreateOrganizationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.GetOrganization
+     */
+    getOrganization: {
+      name: "GetOrganization",
+      I: GetOrganizationRequest,
+      O: GetOrganizationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.UpdateOrganization
+     */
+    updateOrganization: {
+      name: "UpdateOrganization",
+      I: UpdateOrganizationRequest,
+      O: UpdateOrganizationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.DeleteOrganization
+     */
+    deleteOrganization: {
+      name: "DeleteOrganization",
+      I: DeleteOrganizationRequest,
+      O: DeleteOrganizationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.ListOrganizations
+     */
+    listOrganizations: {
+      name: "ListOrganizations",
+      I: ListOrganizationsRequest,
+      O: ListOrganizationsResponse,
       kind: MethodKind.Unary,
     },
   }
