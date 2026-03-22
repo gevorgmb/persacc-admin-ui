@@ -7,6 +7,13 @@ const authInterceptor: Interceptor = (next) => async (req) => {
     if (token) {
         req.header.set('Authorization', `Bearer ${token}`);
     }
+
+    const activeOrgId = localStorage.getItem('active_organization_id');
+    // Do not attach organization_id to OAuth or Organization-related requests
+    if (activeOrgId && !req.method.name.startsWith('OAuth') && !req.method.name.startsWith('Organization') && !req.method.name.startsWith('CreateOrganization') && !req.method.name.startsWith('ListOrganizations') && !req.method.name.startsWith('GetOrganization') && !req.method.name.startsWith('UpdateOrganization') && !req.method.name.startsWith('DeleteOrganization')) {
+        req.header.set('organization_id', activeOrgId);
+    }
+    
     return await next(req);
 };
 
