@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import MainLayout from './components/Layout/MainLayout';
 import Company from './pages/Company';
 import Customers from './pages/Customers';
+import NewCustomer from './pages/NewCustomer';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
@@ -22,6 +23,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/company" element={<Company />} />
               <Route path="/customers" element={<Customers />} />
+              <Route path="/customers/new" element={<NewCustomer />} />
               <Route path="/dashboard" element={<Navigate to="/company" replace />} />
             </Route>
           </Route>
