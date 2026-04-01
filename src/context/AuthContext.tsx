@@ -175,8 +175,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
         };
 
+        const handleUnauthorized = () => {
+            console.warn('AuthContext: Unauthorized event received, logging out');
+            logout();
+        };
+
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        window.addEventListener('unauthorized', handleUnauthorized);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('unauthorized', handleUnauthorized);
+        };
     }, []);
 
     const handleSetActiveOrganizationId = (id: string | null) => {

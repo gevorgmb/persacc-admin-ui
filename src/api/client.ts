@@ -1,4 +1,4 @@
-import { createPromiseClient, type Interceptor } from "@bufbuild/connect";
+import { createPromiseClient, type Interceptor, ConnectError, Code } from "@bufbuild/connect";
 import { createGrpcWebTransport } from "@bufbuild/connect-web";
 import { AdminService } from "../gen/admin_connect";
 
@@ -20,7 +20,15 @@ const authInterceptor: Interceptor = (next) => async (req) => {
         console.log(`Skipping organization-id for ${req.method.name} (orgId: ${activeOrgId}, isSpecial: ${isSpecialRequest})`);
     }
 
-    return await next(req);
+    try {
+        return await next(req);
+    } catch (err) {
+        if (err instanceof ConnectError && err.code === Code.Unauthenticated) {
+            console.error('authInterceptor: Unauthenticated error detected, dispatching unauthorized event');
+            window.dispatchEvent(new CustomEvent('unauthorized'));
+        }
+        throw err;
+    }
 };
 
 // The base URL for the backend API.
