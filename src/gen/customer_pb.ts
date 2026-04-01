@@ -61,9 +61,9 @@ export class Customer extends Message<Customer> {
   email = "";
 
   /**
-   * @generated from field: string additional_info = 11;
+   * @generated from field: map<string, string> additional_info = 11;
    */
-  additionalInfo = "";
+  additionalInfo: { [key: string]: string } = {};
 
   /**
    * @generated from field: int64 user_id = 12;
@@ -103,7 +103,7 @@ export class Customer extends Message<Customer> {
     { no: 8, name: "birthday", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 9, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 10, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 11, name: "additional_info", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 11, name: "additional_info", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
     { no: 12, name: "user_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
     { no: 13, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 14, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
@@ -177,9 +177,9 @@ export class CreateCustomerRequest extends Message<CreateCustomerRequest> {
   email = "";
 
   /**
-   * @generated from field: string additional_info = 10;
+   * @generated from field: map<string, string> additional_info = 10;
    */
-  additionalInfo = "";
+  additionalInfo: { [key: string]: string } = {};
 
   /**
    * @generated from field: int64 user_id = 11;
@@ -203,7 +203,7 @@ export class CreateCustomerRequest extends Message<CreateCustomerRequest> {
     { no: 7, name: "birthday", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 8, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 9, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 10, name: "additional_info", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 10, name: "additional_info", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
     { no: 11, name: "user_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
   ]);
 
@@ -390,9 +390,9 @@ export class UpdateCustomerRequest extends Message<UpdateCustomerRequest> {
   email = "";
 
   /**
-   * @generated from field: string additional_info = 11;
+   * @generated from field: map<string, string> additional_info = 11;
    */
-  additionalInfo = "";
+  additionalInfo: { [key: string]: string } = {};
 
   constructor(data?: PartialMessage<UpdateCustomerRequest>) {
     super();
@@ -412,7 +412,7 @@ export class UpdateCustomerRequest extends Message<UpdateCustomerRequest> {
     { no: 8, name: "birthday", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 9, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 10, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 11, name: "additional_info", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 11, name: "additional_info", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateCustomerRequest {

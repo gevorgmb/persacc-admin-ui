@@ -96,9 +96,9 @@ const CustomerTable: React.FC = () => {
                                 <tr key={customer.id.toString()}>
                                     <td>
                                         <div className="fw-500" style={{ color: 'var(--text-primary)' }}>{customer.name}</div>
-                                        {customer.additionalInfo && (
+                                        {customer.additionalInfo && Object.keys(customer.additionalInfo).length > 0 && (
                                             <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>
-                                                {customer.additionalInfo}
+                                                {Object.entries(customer.additionalInfo).map(([k, v]) => `${k}: ${v}`).join(', ')}
                                             </div>
                                         )}
                                     </td>

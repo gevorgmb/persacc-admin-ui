@@ -23,6 +23,8 @@ const CustomerForm: React.FC = () => {
         email: '',
     });
 
+    const [additionalFields, setAdditionalFields] = useState<{ key: string, value: string }[]>([]);
+
     const [nameDetails, setNameDetails] = useState<NameDetails>({
         prefix: '',
         firstName: '',
@@ -65,33 +67,48 @@ const CustomerForm: React.FC = () => {
 
         isUpdatingFromSimple.current = true;
 
-        const isEmpty = !nameDetails.prefix && !nameDetails.firstName && 
-                        !nameDetails.middleName && !nameDetails.lastName && !nameDetails.suffix;
+        const parts = newName.trim().split(/\s+/).filter(Boolean);
+        const newDetails: NameDetails = {
+            prefix: '',
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+        };
 
-        if (isEmpty) {
-            const parts = newName.trim().split(/\s+/);
-            setNameDetails({
-                prefix: '',
-                firstName: parts[0] || '',
-                middleName: '',
-                lastName: parts.slice(1).join(' '),
-                suffix: '',
-            });
-        } else {
-            // Complex sync logic requested:
-            // "words and letters added before John will be added to first_name" etc.
-            // This is hard to do perfectly with just the current string.
-            // We'll use a simplified version: split by spaces and try to map.
-            // For now, let's keep it simple as a placeholder for the "User would see how we are building details" part.
-            // If they are in detailed mode, they edit parts. If they are in simple mode, 
-            // we'll just overwrite firstName and lastName as a fallback if they haven't touched detailed.
-            const parts = newName.trim().split(/\s+/);
-            setNameDetails(prev => ({
-                ...prev,
-                firstName: parts[0] || '',
-                lastName: parts.slice(1).join(' '),
-            }));
+        if (parts.length > 0) {
+            const commonPrefixes = ['mr', 'mrs', 'ms', 'dr', 'prof', 'sir'];
+            const commonSuffixes = ['jr', 'sr', 'ii', 'iii', 'iv', 'v', 'md', 'phd'];
+
+            let startIdx = 0;
+            let endIdx = parts.length;
+
+            // Simple heuristic for prefix
+            if (parts[0] && (parts[0].endsWith('.') || commonPrefixes.includes(parts[0].toLowerCase().replace('.', '')))) {
+                newDetails.prefix = parts[0];
+                startIdx = 1;
+            }
+
+            // Simple heuristic for suffix
+            if (parts.length > startIdx + 1 && (parts[parts.length - 1].endsWith('.') || commonSuffixes.includes(parts[parts.length - 1].toLowerCase().replace('.', '')))) {
+                newDetails.suffix = parts[parts.length - 1];
+                endIdx = parts.length - 1;
+            }
+
+            const remaining = parts.slice(startIdx, endIdx);
+            if (remaining.length === 1) {
+                newDetails.firstName = remaining[0];
+            } else if (remaining.length === 2) {
+                newDetails.firstName = remaining[0];
+                newDetails.lastName = remaining[1];
+            } else if (remaining.length >= 3) {
+                newDetails.firstName = remaining[0];
+                newDetails.middleName = remaining[1];
+                newDetails.lastName = remaining.slice(2).join(' ');
+            }
         }
+        
+        setNameDetails(newDetails);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,10 +125,45 @@ const CustomerForm: React.FC = () => {
         setNameDetails(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleAddAdditionalField = () => {
+        // Only allow adding if all existing fields are filled
+        const canAdd = additionalFields.length === 0 || 
+                      (additionalFields[additionalFields.length - 1].key && 
+                       additionalFields[additionalFields.length - 1].value);
+        
+        if (canAdd) {
+            setAdditionalFields([...additionalFields, { key: '', value: '' }]);
+        }
+    };
+
+    const handleRemoveAdditionalField = (index: number) => {
+        setAdditionalFields(additionalFields.filter((_, i) => i !== index));
+    };
+
+    const handleAdditionalFieldChange = (index: number, field: 'key' | 'value', value: string) => {
+        if (field === 'key') {
+            // Validation: only lowercase latin characters and numbers, must begin with latin character
+            const regex = /^[a-z][a-z0-9]*$/;
+            if (value !== '' && !regex.test(value)) {
+                return; // Ignore invalid input
+            }
+        }
+        
+        const newFields = [...additionalFields];
+        newFields[index][field] = value;
+        setAdditionalFields(newFields);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        // Convert additional fields array to object
+        const additionalInfo: { [key: string]: string } = {};
+        additionalFields.forEach(f => {
+            if (f.key) additionalInfo[f.key] = f.value;
+        });
 
         try {
             await client.createCustomer({
@@ -124,6 +176,7 @@ const CustomerForm: React.FC = () => {
                 birthday: formData.birthday,
                 phone: formData.phone,
                 email: formData.email,
+                additionalInfo: additionalInfo,
             });
             navigate('/customers');
         } catch (err: any) {
@@ -177,36 +230,97 @@ const CustomerForm: React.FC = () => {
                 </div>
             </div>
 
-            {isDetailed && (
+            {(isDetailed || formData.name.trim()) && (
                 <div className="detailed-name-fields" style={{ 
                     display: 'grid', 
                     gridTemplateColumns: '1fr 1fr 1fr', 
                     gap: '1rem', 
                     marginBottom: '1.5rem',
                     padding: '1.5rem',
-                    background: 'rgba(255,255,255,0.03)',
+                    background: isDetailed ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
                     borderRadius: '12px',
-                    border: '1px solid var(--border-light)'
+                    border: isDetailed ? '1px solid var(--border-light)' : '1px dashed var(--border-light)',
+                    opacity: isDetailed ? 1 : 0.8
                 }}>
                     <div className="form-group">
                         <label className="sub-label">Prefix</label>
-                        <input type="text" name="prefix" value={nameDetails.prefix} onChange={handleDetailChange} className="form-input-sub" />
+                        <input 
+                            type="text" 
+                            name="prefix" 
+                            value={nameDetails.prefix} 
+                            onChange={handleDetailChange} 
+                            readOnly={!isDetailed}
+                            placeholder={!isDetailed ? '—' : ''}
+                            className="form-input-sub" 
+                            style={{ 
+                                background: isDetailed ? 'var(--bg-primary)' : 'transparent',
+                                border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
+                            }}
+                        />
                     </div>
                     <div className="form-group">
                         <label className="sub-label">First Name</label>
-                        <input type="text" name="firstName" value={nameDetails.firstName} onChange={handleDetailChange} className="form-input-sub" />
+                        <input 
+                            type="text" 
+                            name="firstName" 
+                            value={nameDetails.firstName} 
+                            onChange={handleDetailChange} 
+                            readOnly={!isDetailed}
+                            placeholder={!isDetailed ? '—' : ''}
+                            className="form-input-sub" 
+                            style={{ 
+                                background: isDetailed ? 'var(--bg-primary)' : 'transparent',
+                                border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
+                            }}
+                        />
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Middle Name</label>
-                        <input type="text" name="middleName" value={nameDetails.middleName} onChange={handleDetailChange} className="form-input-sub" />
+                        <input 
+                            type="text" 
+                            name="middleName" 
+                            value={nameDetails.middleName} 
+                            onChange={handleDetailChange} 
+                            readOnly={!isDetailed}
+                            placeholder={!isDetailed ? '—' : ''}
+                            className="form-input-sub" 
+                            style={{ 
+                                background: isDetailed ? 'var(--bg-primary)' : 'transparent',
+                                border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
+                            }}
+                        />
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Last Name</label>
-                        <input type="text" name="lastName" value={nameDetails.lastName} onChange={handleDetailChange} className="form-input-sub" />
+                        <input 
+                            type="text" 
+                            name="lastName" 
+                            value={nameDetails.lastName} 
+                            onChange={handleDetailChange} 
+                            readOnly={!isDetailed}
+                            placeholder={!isDetailed ? '—' : ''}
+                            className="form-input-sub" 
+                            style={{ 
+                                background: isDetailed ? 'var(--bg-primary)' : 'transparent',
+                                border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
+                            }}
+                        />
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Suffix</label>
-                        <input type="text" name="suffix" value={nameDetails.suffix} onChange={handleDetailChange} className="form-input-sub" />
+                        <input 
+                            type="text" 
+                            name="suffix" 
+                            value={nameDetails.suffix} 
+                            onChange={handleDetailChange} 
+                            readOnly={!isDetailed}
+                            placeholder={!isDetailed ? '—' : ''}
+                            className="form-input-sub" 
+                            style={{ 
+                                background: isDetailed ? 'var(--bg-primary)' : 'transparent',
+                                border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
+                            }}
+                        />
                     </div>
                 </div>
             )}
@@ -237,7 +351,7 @@ const CustomerForm: React.FC = () => {
                 </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Email</label>
                 <input
                     type="email"
@@ -249,6 +363,83 @@ const CustomerForm: React.FC = () => {
                     className="form-input"
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-light)', color: 'var(--text-primary)' }}
                 />
+            </div>
+
+            <div className="additional-info-section" style={{ marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Additional Info</label>
+                </div>
+
+                {additionalFields.map((field, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1 }}>
+                            <label className="sub-label">Key</label>
+                            <input
+                                type="text"
+                                value={field.key}
+                                onChange={(e) => handleAdditionalFieldChange(index, 'key', e.target.value)}
+                                placeholder="e.g. twitter"
+                                className="form-input-sub"
+                            />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label className="sub-label">Value</label>
+                            <input
+                                type="text"
+                                value={field.value}
+                                onChange={(e) => handleAdditionalFieldChange(index, 'value', e.target.value)}
+                                placeholder="Value..."
+                                className="form-input-sub"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => handleRemoveAdditionalField(index)}
+                            style={{
+                                padding: '0.5rem',
+                                borderRadius: '6px',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.2)',
+                                color: '#ef4444',
+                                cursor: 'pointer',
+                                height: '36px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                ))}
+
+                <button
+                    type="button"
+                    onClick={handleAddAdditionalField}
+                    disabled={additionalFields.length > 0 && !(additionalFields[additionalFields.length - 1].key && additionalFields[additionalFields.length - 1].value)}
+                    style={{
+                        padding: '0.5rem 1rem',
+                        borderRadius: '8px',
+                        background: 'transparent',
+                        border: '1px dashed var(--border-light)',
+                        color: 'var(--text-secondary)',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        marginTop: '0.5rem'
+                    }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add a custom field
+                </button>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
