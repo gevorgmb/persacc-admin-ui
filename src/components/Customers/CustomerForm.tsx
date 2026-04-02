@@ -10,9 +10,14 @@ interface NameDetails {
     suffix: string;
 }
 
-const CustomerForm: React.FC = () => {
+interface Props {
+    customerId?: string;
+}
+
+const CustomerForm: React.FC<Props> = ({ customerId }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isDetailed, setIsDetailed] = useState(false);
 
@@ -37,6 +42,54 @@ const CustomerForm: React.FC = () => {
     const isUpdatingFromSimple = useRef(false);
     const isUpdatingFromDetailed = useRef(false);
 
+    // Fetch customer data if editing
+    useEffect(() => {
+        const fetchCustomer = async () => {
+            if (!customerId) return;
+
+            setFetching(true);
+            setError(null);
+            try {
+                const response = await client.getCustomer({ id: BigInt(customerId) });
+                const customer = response.customer;
+                if (customer) {
+                    setFormData({
+                        name: customer.name,
+                        birthday: customer.birthday,
+                        phone: customer.phone,
+                        email: customer.email,
+                    });
+                    setNameDetails({
+                        prefix: customer.prefix,
+                        firstName: customer.firstName,
+                        middleName: customer.middleName,
+                        lastName: customer.lastName,
+                        suffix: customer.suffix,
+                    });
+
+                    if (customer.additionalInfo) {
+                        const fields = Object.entries(customer.additionalInfo).map(([key, value]) => ({
+                            key,
+                            value
+                        }));
+                        setAdditionalFields(fields);
+                    }
+
+                    // If any detailed name parts exist, enable detailed mode
+                    if (customer.firstName || customer.lastName || customer.prefix || customer.middleName || customer.suffix) {
+                        setIsDetailed(true);
+                    }
+                }
+            } catch (err: any) {
+                setError(err.message || 'Failed to fetch customer data');
+            } finally {
+                setFetching(false);
+            }
+        };
+
+        fetchCustomer();
+    }, [customerId]);
+
     // Sync Detailed -> Simple
     useEffect(() => {
         if (isUpdatingFromSimple.current) {
@@ -52,14 +105,14 @@ const CustomerForm: React.FC = () => {
             nameDetails.lastName,
             nameDetails.suffix
         ].filter(Boolean).join(' ');
-        
+
         setFormData(prev => ({ ...prev, name: full }));
     }, [nameDetails]);
 
     // Sync Simple -> Detailed (Custom Logic)
     const handleSimpleNameChange = (newName: string) => {
         setFormData(prev => ({ ...prev, name: newName }));
-        
+
         if (isUpdatingFromDetailed.current) {
             isUpdatingFromDetailed.current = false;
             return;
@@ -107,7 +160,7 @@ const CustomerForm: React.FC = () => {
                 newDetails.lastName = remaining.slice(2).join(' ');
             }
         }
-        
+
         setNameDetails(newDetails);
     };
 
@@ -127,10 +180,10 @@ const CustomerForm: React.FC = () => {
 
     const handleAddAdditionalField = () => {
         // Only allow adding if all existing fields are filled
-        const canAdd = additionalFields.length === 0 || 
-                      (additionalFields[additionalFields.length - 1].key && 
-                       additionalFields[additionalFields.length - 1].value);
-        
+        const canAdd = additionalFields.length === 0 ||
+            (additionalFields[additionalFields.length - 1].key &&
+                additionalFields[additionalFields.length - 1].value);
+
         if (canAdd) {
             setAdditionalFields([...additionalFields, { key: '', value: '' }]);
         }
@@ -148,7 +201,7 @@ const CustomerForm: React.FC = () => {
                 return; // Ignore invalid input
             }
         }
-        
+
         const newFields = [...additionalFields];
         newFields[index][field] = value;
         setAdditionalFields(newFields);
@@ -165,26 +218,40 @@ const CustomerForm: React.FC = () => {
             if (f.key) additionalInfo[f.key] = f.value;
         });
 
+        const customerPayload = {
+            name: formData.name,
+            firstName: nameDetails.firstName,
+            lastName: nameDetails.lastName,
+            prefix: nameDetails.prefix,
+            middleName: nameDetails.middleName,
+            suffix: nameDetails.suffix,
+            birthday: formData.birthday,
+            phone: formData.phone,
+            email: formData.email,
+            additionalInfo: additionalInfo,
+        };
+
         try {
-            await client.createCustomer({
-                name: formData.name,
-                firstName: nameDetails.firstName,
-                lastName: nameDetails.lastName,
-                prefix: nameDetails.prefix,
-                middleName: nameDetails.middleName,
-                suffix: nameDetails.suffix,
-                birthday: formData.birthday,
-                phone: formData.phone,
-                email: formData.email,
-                additionalInfo: additionalInfo,
-            });
+            if (customerId) {
+                await client.updateCustomer({
+                    id: BigInt(customerId),
+                    ...customerPayload
+                });
+            } else {
+                await client.createCustomer(customerPayload);
+            }
             navigate('/customers');
         } catch (err: any) {
-            setError(err.message || 'Failed to create customer');
+            setError(err.message || `Failed to ${customerId ? 'update' : 'create'} customer`);
         } finally {
             setLoading(false);
         }
     };
+
+
+    if (fetching) {
+        return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading customer data...</div>;
+    }
 
     return (
         <form onSubmit={handleSubmit} className="customer-form">
@@ -231,10 +298,10 @@ const CustomerForm: React.FC = () => {
             </div>
 
             {(isDetailed || formData.name.trim()) && (
-                <div className="detailed-name-fields" style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: '1fr 1fr 1fr', 
-                    gap: '1rem', 
+                <div className="detailed-name-fields" style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
                     marginBottom: '1.5rem',
                     padding: '1.5rem',
                     background: isDetailed ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
@@ -244,15 +311,15 @@ const CustomerForm: React.FC = () => {
                 }}>
                     <div className="form-group">
                         <label className="sub-label">Prefix</label>
-                        <input 
-                            type="text" 
-                            name="prefix" 
-                            value={nameDetails.prefix} 
-                            onChange={handleDetailChange} 
+                        <input
+                            type="text"
+                            name="prefix"
+                            value={nameDetails.prefix}
+                            onChange={handleDetailChange}
                             readOnly={!isDetailed}
                             placeholder={!isDetailed ? '—' : ''}
-                            className="form-input-sub" 
-                            style={{ 
+                            className="form-input-sub"
+                            style={{
                                 background: isDetailed ? 'var(--bg-primary)' : 'transparent',
                                 border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
                             }}
@@ -260,15 +327,15 @@ const CustomerForm: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label className="sub-label">First Name</label>
-                        <input 
-                            type="text" 
-                            name="firstName" 
-                            value={nameDetails.firstName} 
-                            onChange={handleDetailChange} 
+                        <input
+                            type="text"
+                            name="firstName"
+                            value={nameDetails.firstName}
+                            onChange={handleDetailChange}
                             readOnly={!isDetailed}
                             placeholder={!isDetailed ? '—' : ''}
-                            className="form-input-sub" 
-                            style={{ 
+                            className="form-input-sub"
+                            style={{
                                 background: isDetailed ? 'var(--bg-primary)' : 'transparent',
                                 border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
                             }}
@@ -276,15 +343,15 @@ const CustomerForm: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Middle Name</label>
-                        <input 
-                            type="text" 
-                            name="middleName" 
-                            value={nameDetails.middleName} 
-                            onChange={handleDetailChange} 
+                        <input
+                            type="text"
+                            name="middleName"
+                            value={nameDetails.middleName}
+                            onChange={handleDetailChange}
                             readOnly={!isDetailed}
                             placeholder={!isDetailed ? '—' : ''}
-                            className="form-input-sub" 
-                            style={{ 
+                            className="form-input-sub"
+                            style={{
                                 background: isDetailed ? 'var(--bg-primary)' : 'transparent',
                                 border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
                             }}
@@ -292,15 +359,15 @@ const CustomerForm: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Last Name</label>
-                        <input 
-                            type="text" 
-                            name="lastName" 
-                            value={nameDetails.lastName} 
-                            onChange={handleDetailChange} 
+                        <input
+                            type="text"
+                            name="lastName"
+                            value={nameDetails.lastName}
+                            onChange={handleDetailChange}
                             readOnly={!isDetailed}
                             placeholder={!isDetailed ? '—' : ''}
-                            className="form-input-sub" 
-                            style={{ 
+                            className="form-input-sub"
+                            style={{
                                 background: isDetailed ? 'var(--bg-primary)' : 'transparent',
                                 border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
                             }}
@@ -308,15 +375,15 @@ const CustomerForm: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label className="sub-label">Suffix</label>
-                        <input 
-                            type="text" 
-                            name="suffix" 
-                            value={nameDetails.suffix} 
-                            onChange={handleDetailChange} 
+                        <input
+                            type="text"
+                            name="suffix"
+                            value={nameDetails.suffix}
+                            onChange={handleDetailChange}
                             readOnly={!isDetailed}
                             placeholder={!isDetailed ? '—' : ''}
-                            className="form-input-sub" 
-                            style={{ 
+                            className="form-input-sub"
+                            style={{
                                 background: isDetailed ? 'var(--bg-primary)' : 'transparent',
                                 border: isDetailed ? '1px solid var(--border-light)' : '1px solid transparent',
                             }}
@@ -465,8 +532,9 @@ const CustomerForm: React.FC = () => {
                         opacity: loading ? 0.7 : 1
                     }}
                 >
-                    {loading ? 'Saving...' : 'Create Customer'}
+                    {loading ? 'Saving...' : (customerId ? 'Update Customer' : 'Create Customer')}
                 </button>
+
             </div>
 
             <style>{`

@@ -5,6 +5,8 @@ import MainLayout from './components/Layout/MainLayout';
 import Company from './pages/Company';
 import Customers from './pages/Customers';
 import NewCustomer from './pages/NewCustomer';
+import EditCustomer from './pages/EditCustomer';
+
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
@@ -24,6 +26,8 @@ function App() {
               <Route path="/company" element={<Company />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/customers/new" element={<NewCustomer />} />
+              <Route path="/customers/:id" element={<EditCustomer />} />
+
               <Route path="/dashboard" element={<Navigate to="/company" replace />} />
             </Route>
           </Route>
