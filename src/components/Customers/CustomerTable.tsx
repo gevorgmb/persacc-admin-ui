@@ -4,7 +4,21 @@ import { client } from '../../api/client';
 
 import { Customer } from '../../gen/customer_pb';
 
-const CustomerTable: React.FC = () => {
+interface Filters {
+    name?: string;
+    email?: string;
+    phone?: string;
+    additionalInfo?: string;
+}
+
+interface Props {
+    filters?: Filters;
+    onLoad?: () => void;
+}
+
+const CustomerTable: React.FC<Props> = ({ filters, onLoad }) => {
+
+
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -16,7 +30,14 @@ const CustomerTable: React.FC = () => {
         setError(null);
         try {
             // Fetch first page of customers with a generous limit for now
-            const response = await client.listCustomers({ page: 1, limit: 50 });
+                        const response = await client.listCustomers({ 
+                page: 1, 
+                limit: 50,
+                name: filters?.name || '',
+                email: filters?.email || '',
+                phone: filters?.phone || '',
+                additionalInfo: filters?.additionalInfo || '',
+            });
             setCustomers(response.customers);
         } catch (err: any) {
             setError(err.message || 'Failed to fetch customer data');
@@ -26,12 +47,14 @@ const CustomerTable: React.FC = () => {
             // but for now let's just show the error.
         } finally {
             setLoading(false);
+            if (onLoad) onLoad();
         }
     };
 
     useEffect(() => {
         fetchCustomers();
-    }, []);
+    }, [filters]);
+
 
     const handleEdit = (customer: Customer) => {
         navigate(`/customers/${customer.id}`);

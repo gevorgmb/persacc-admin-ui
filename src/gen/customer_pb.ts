@@ -557,6 +557,26 @@ export class ListCustomersRequest extends Message<ListCustomersRequest> {
    */
   limit = 0;
 
+  /**
+   * @generated from field: string name = 3;
+   */
+  name = "";
+
+  /**
+   * @generated from field: string email = 4;
+   */
+  email = "";
+
+  /**
+   * @generated from field: string phone = 5;
+   */
+  phone = "";
+
+  /**
+   * @generated from field: string additional_info = 6;
+   */
+  additionalInfo = "";
+
   constructor(data?: PartialMessage<ListCustomersRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -567,6 +587,10 @@ export class ListCustomersRequest extends Message<ListCustomersRequest> {
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "page", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 3, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "phone", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "additional_info", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListCustomersRequest {
