@@ -179,3 +179,8 @@ button {
   border-color: var(--accent-secondary);
   background: rgba(236, 72, 153, 0.1);
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
