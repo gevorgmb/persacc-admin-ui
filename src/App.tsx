@@ -4,6 +4,9 @@ import Login from './pages/Login';
 import MainLayout from './components/Layout/MainLayout';
 import Company from './pages/Company';
 import Customers from './pages/Customers';
+import Products from './pages/Products';
+import NewProduct from './pages/NewProduct';
+import EditProduct from './pages/EditProduct';
 import NewCustomer from './pages/NewCustomer';
 import EditCustomer from './pages/EditCustomer';
 
@@ -25,6 +28,9 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/company" element={<Company />} />
               <Route path="/customers" element={<Customers />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/new" element={<NewProduct />} />
+              <Route path="/products/:id" element={<EditProduct />} />
               <Route path="/customers/new" element={<NewCustomer />} />
               <Route path="/customers/:id" element={<EditCustomer />} />
 

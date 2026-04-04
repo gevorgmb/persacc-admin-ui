@@ -23,6 +23,13 @@ const Sidebar: React.FC = () => {
                     <span className="nav-icon">👥</span>
                     Customers
                 </NavLink>
+                <NavLink
+                    to="/products"
+                    className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                >
+                    <span className="nav-icon">📦</span>
+                    Products
+                </NavLink>
             </nav>
         </aside>
     );

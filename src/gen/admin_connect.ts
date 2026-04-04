@@ -10,6 +10,7 @@ import { CreateCustomerRequest, CreateCustomerResponse, DeleteCustomerRequest, D
 import { CreateRoleRequest, CreateRoleResponse, DeleteRoleRequest, DeleteRoleResponse, GetRoleRequest, GetRoleResponse, ListRolesRequest, ListRolesResponse, UpdateRoleRequest, UpdateRoleResponse } from "./role_pb.js";
 import { CreatePermissionRequest, CreatePermissionResponse, DeletePermissionRequest, DeletePermissionResponse, GetPermissionRequest, GetPermissionResponse, ListPermissionsRequest, ListPermissionsResponse, UpdatePermissionRequest, UpdatePermissionResponse } from "./permission_pb.js";
 import { CreateOrganizationRequest, CreateOrganizationResponse, DeleteOrganizationRequest, DeleteOrganizationResponse, GetOrganizationRequest, GetOrganizationResponse, ListOrganizationsRequest, ListOrganizationsResponse, UpdateOrganizationRequest, UpdateOrganizationResponse } from "./organization_pb.js";
+import { CreateProductRequest, CreateProductResponse, DeleteProductRequest, DeleteProductResponse, GetProductRequest, GetProductResponse, ListProductsRequest, ListProductsResponse, UpdateProductRequest, UpdateProductResponse } from "./product_pb.js";
 
 /**
  * @generated from service admin.AdminService
@@ -285,6 +286,51 @@ export const AdminService = {
       name: "ListOrganizations",
       I: ListOrganizationsRequest,
       O: ListOrganizationsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.CreateProduct
+     */
+    createProduct: {
+      name: "CreateProduct",
+      I: CreateProductRequest,
+      O: CreateProductResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.GetProduct
+     */
+    getProduct: {
+      name: "GetProduct",
+      I: GetProductRequest,
+      O: GetProductResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.UpdateProduct
+     */
+    updateProduct: {
+      name: "UpdateProduct",
+      I: UpdateProductRequest,
+      O: UpdateProductResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.DeleteProduct
+     */
+    deleteProduct: {
+      name: "DeleteProduct",
+      I: DeleteProductRequest,
+      O: DeleteProductResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.ListProducts
+     */
+    listProducts: {
+      name: "ListProducts",
+      I: ListProductsRequest,
+      O: ListProductsResponse,
       kind: MethodKind.Unary,
     },
   }
