@@ -536,28 +536,6 @@ const CustomerForm: React.FC<Props> = ({ customerId }) => {
                 </button>
 
             </div>
-
-            <style>{`
-                .form-input-sub {
-                    width: 100%;
-                    padding: 0.5rem;
-                    border-radius: 6px;
-                    background: var(--bg-primary);
-                    border: 1px solid var(--border-light);
-                    color: var(--text-primary);
-                    font-size: 0.9rem;
-                    outline: none;
-                }
-                .form-input-sub:focus {
-                    border-color: var(--accent-primary);
-                }
-                .sub-label {
-                    display: block;
-                    font-size: 0.8rem;
-                    color: var(--text-tertiary);
-                    margin-bottom: 0.25rem;
-                }
-            `}</style>
         </form>
     );
 };
