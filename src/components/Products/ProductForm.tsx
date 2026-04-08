@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { client } from '../../api/client';
+import { ProductCategory } from '../../gen/product_category_pb';
+import { Vendor } from '../../gen/vendor_pb';
 
 interface Props {
     productId?: string;
@@ -12,14 +14,36 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
     const [fetching, setFetching] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [categories, setCategories] = useState<ProductCategory[]>([]);
+    const [vendors, setVendors] = useState<Vendor[]>([]);
+
     const [formData, setFormData] = useState({
         sku: '',
         name: '',
         description: '',
+        categoryId: '',
+        vendorId: '',
+        vendorProductCode: '',
     });
 
     const [additionalFields, setAdditionalFields] = useState<{ key: string; value: string }[]>([]);
 
+    // Fetch dependencies (Categories and Vendors)
+    useEffect(() => {
+        const fetchDependencies = async () => {
+            try {
+                const [catRes, venRes] = await Promise.all([
+                    client.listProductCategories({ page: 1, limit: 100 }),
+                    client.listVendors({ page: 1, limit: 100 })
+                ]);
+                setCategories(catRes.categories);
+                setVendors(venRes.vendors);
+            } catch (err) {
+                console.error('Failed to fetch dependencies:', err);
+            }
+        };
+        fetchDependencies();
+    }, []);
 
     // Fetch product data if editing
     useEffect(() => {
@@ -36,6 +60,9 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
                         sku: product.sku,
                         name: product.name,
                         description: product.description,
+                        categoryId: product.categoryId.toString(),
+                        vendorId: product.vendorId.toString(),
+                        vendorProductCode: product.vendorProductCode,
                     });
 
                     if (product.additionalDetails) {
@@ -56,7 +83,7 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
         fetchProduct();
     }, [productId]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -100,22 +127,24 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
             if (f.key) additionalDetails[f.key] = f.value;
         });
 
+        const payload = {
+            sku: formData.sku,
+            name: formData.name,
+            description: formData.description,
+            additionalDetails: additionalDetails,
+            categoryId: formData.categoryId ? BigInt(formData.categoryId) : BigInt(0),
+            vendorId: formData.vendorId ? BigInt(formData.vendorId) : BigInt(0),
+            vendorProductCode: formData.vendorProductCode,
+        };
+
         try {
             if (productId) {
                 await client.updateProduct({
                     id: BigInt(productId),
-                    sku: formData.sku,
-                    name: formData.name,
-                    description: formData.description,
-                    additionalDetails: additionalDetails,
+                    ...payload
                 });
             } else {
-                await client.createProduct({
-                    sku: formData.sku,
-                    name: formData.name,
-                    description: formData.description,
-                    additionalDetails: additionalDetails,
-                });
+                await client.createProduct(payload);
             }
             navigate('/products');
         } catch (err: any) {
@@ -160,6 +189,53 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-light)', color: 'var(--text-primary)' }}
                 />
             </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                <div className="form-group">
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Category</label>
+                    <select
+                        name="categoryId"
+                        value={formData.categoryId}
+                        onChange={handleChange}
+                        className="form-input"
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-light)', color: 'var(--text-primary)' }}
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map(cat => (
+                            <option key={cat.id.toString()} value={cat.id.toString()}>{cat.name}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Vendor</label>
+                    <select
+                        name="vendorId"
+                        value={formData.vendorId}
+                        onChange={handleChange}
+                        className="form-input"
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-light)', color: 'var(--text-primary)' }}
+                    >
+                        <option value="">Select Vendor</option>
+                        {vendors.map(ven => (
+                            <option key={ven.id.toString()} value={ven.id.toString()}>{ven.name}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Vendor Product Code</label>
+                <input
+                    type="text"
+                    name="vendorProductCode"
+                    value={formData.vendorProductCode}
+                    onChange={handleChange}
+                    placeholder="VEND-XYZ-123"
+                    className="form-input"
+                    style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-light)', color: 'var(--text-primary)' }}
+                />
+            </div>
+
 
             <div className="additional-info-section" style={{ marginBottom: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

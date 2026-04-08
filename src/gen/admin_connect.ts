@@ -12,6 +12,8 @@ import { CreatePermissionRequest, CreatePermissionResponse, DeletePermissionRequ
 import { CreateOrganizationRequest, CreateOrganizationResponse, DeleteOrganizationRequest, DeleteOrganizationResponse, GetOrganizationRequest, GetOrganizationResponse, ListOrganizationsRequest, ListOrganizationsResponse, UpdateOrganizationRequest, UpdateOrganizationResponse } from "./organization_pb.js";
 import { CreateProductRequest, CreateProductResponse, DeleteProductRequest, DeleteProductResponse, GetProductRequest, GetProductResponse, ListProductsRequest, ListProductsResponse, UpdateProductRequest, UpdateProductResponse } from "./product_pb.js";
 import { CreateProductCategoryRequest, CreateProductCategoryResponse, DeleteProductCategoryRequest, DeleteProductCategoryResponse, GetProductCategoryRequest, GetProductCategoryResponse, ListProductCategoriesRequest, ListProductCategoriesResponse, UpdateProductCategoryRequest, UpdateProductCategoryResponse } from "./product_category_pb.js";
+import { CreateSupplierRequest, CreateSupplierResponse, DeleteSupplierRequest, DeleteSupplierResponse, GetSupplierRequest, GetSupplierResponse, ListSuppliersRequest, ListSuppliersResponse, UpdateSupplierRequest, UpdateSupplierResponse } from "./supplier_pb.js";
+import { CreateVendorRequest, CreateVendorResponse, DeleteVendorRequest, DeleteVendorResponse, GetVendorRequest, GetVendorResponse, ListVendorsRequest, ListVendorsResponse, UpdateVendorRequest, UpdateVendorResponse } from "./vendor_pb.js";
 
 /**
  * @generated from service admin.AdminService
@@ -377,6 +379,96 @@ export const AdminService = {
       name: "ListProductCategories",
       I: ListProductCategoriesRequest,
       O: ListProductCategoriesResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.CreateSupplier
+     */
+    createSupplier: {
+      name: "CreateSupplier",
+      I: CreateSupplierRequest,
+      O: CreateSupplierResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.GetSupplier
+     */
+    getSupplier: {
+      name: "GetSupplier",
+      I: GetSupplierRequest,
+      O: GetSupplierResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.UpdateSupplier
+     */
+    updateSupplier: {
+      name: "UpdateSupplier",
+      I: UpdateSupplierRequest,
+      O: UpdateSupplierResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.DeleteSupplier
+     */
+    deleteSupplier: {
+      name: "DeleteSupplier",
+      I: DeleteSupplierRequest,
+      O: DeleteSupplierResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.ListSuppliers
+     */
+    listSuppliers: {
+      name: "ListSuppliers",
+      I: ListSuppliersRequest,
+      O: ListSuppliersResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.CreateVendor
+     */
+    createVendor: {
+      name: "CreateVendor",
+      I: CreateVendorRequest,
+      O: CreateVendorResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.GetVendor
+     */
+    getVendor: {
+      name: "GetVendor",
+      I: GetVendorRequest,
+      O: GetVendorResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.UpdateVendor
+     */
+    updateVendor: {
+      name: "UpdateVendor",
+      I: UpdateVendorRequest,
+      O: UpdateVendorResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.DeleteVendor
+     */
+    deleteVendor: {
+      name: "DeleteVendor",
+      I: DeleteVendorRequest,
+      O: DeleteVendorResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.ListVendors
+     */
+    listVendors: {
+      name: "ListVendors",
+      I: ListVendorsRequest,
+      O: ListVendorsResponse,
       kind: MethodKind.Unary,
     },
   }
