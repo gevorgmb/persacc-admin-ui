@@ -18,6 +18,9 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
         description: '',
     });
 
+    const [additionalFields, setAdditionalFields] = useState<{ key: string; value: string }[]>([]);
+
+
     // Fetch product data if editing
     useEffect(() => {
         const fetchProduct = async () => {
@@ -34,6 +37,14 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
                         name: product.name,
                         description: product.description,
                     });
+
+                    if (product.additionalDetails) {
+                        const fields = Object.entries(product.additionalDetails).map(([key, value]) => ({
+                            key,
+                            value
+                        }));
+                        setAdditionalFields(fields);
+                    }
                 }
             } catch (err: any) {
                 setError(err.message || 'Failed to fetch product data');
@@ -50,10 +61,44 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleAddAdditionalField = () => {
+        const canAdd = additionalFields.length === 0 ||
+            (additionalFields[additionalFields.length - 1].key &&
+                additionalFields[additionalFields.length - 1].value);
+
+        if (canAdd) {
+            setAdditionalFields([...additionalFields, { key: '', value: '' }]);
+        }
+    };
+
+    const handleRemoveAdditionalField = (index: number) => {
+        setAdditionalFields(additionalFields.filter((_, i) => i !== index));
+    };
+
+    const handleAdditionalFieldChange = (index: number, field: 'key' | 'value', value: string) => {
+        if (field === 'key') {
+            const regex = /^[a-z][a-z0-9]*$/;
+            if (value !== '' && !regex.test(value)) {
+                return;
+            }
+        }
+
+        const newFields = [...additionalFields];
+        newFields[index][field] = value;
+        setAdditionalFields(newFields);
+    };
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        // Convert additional fields array to object
+        const additionalDetails: { [key: string]: string } = {};
+        additionalFields.forEach(f => {
+            if (f.key) additionalDetails[f.key] = f.value;
+        });
 
         try {
             if (productId) {
@@ -62,12 +107,14 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
                     sku: formData.sku,
                     name: formData.name,
                     description: formData.description,
+                    additionalDetails: additionalDetails,
                 });
             } else {
                 await client.createProduct({
                     sku: formData.sku,
                     name: formData.name,
                     description: formData.description,
+                    additionalDetails: additionalDetails,
                 });
             }
             navigate('/products');
@@ -114,27 +161,83 @@ const ProductForm: React.FC<Props> = ({ productId }) => {
                 />
             </div>
 
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Description</label>
-                <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    placeholder="Premium roasted Arabica beans..."
-                    className="form-input"
+            <div className="additional-info-section" style={{ marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Additional Details</label>
+                </div>
+
+                {additionalFields.map((field, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1 }}>
+                            <label className="sub-label">Key</label>
+                            <input
+                                type="text"
+                                value={field.key}
+                                onChange={(e) => handleAdditionalFieldChange(index, 'key', e.target.value)}
+                                placeholder="e.g. weight"
+                                className="form-input-sub"
+                            />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label className="sub-label">Value</label>
+                            <input
+                                type="text"
+                                value={field.value}
+                                onChange={(e) => handleAdditionalFieldChange(index, 'value', e.target.value)}
+                                placeholder="Value..."
+                                className="form-input-sub"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => handleRemoveAdditionalField(index)}
+                            style={{
+                                padding: '0.5rem',
+                                borderRadius: '6px',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.2)',
+                                color: '#ef4444',
+                                cursor: 'pointer',
+                                height: '36px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                ))}
+
+                <button
+                    type="button"
+                    onClick={handleAddAdditionalField}
+                    disabled={additionalFields.length > 0 && !(additionalFields[additionalFields.length - 1].key && additionalFields[additionalFields.length - 1].value)}
                     style={{
-                        width: '100%',
-                        padding: '0.75rem',
+                        padding: '0.5rem 1rem',
                         borderRadius: '8px',
-                        background: 'var(--bg-tertiary)',
-                        border: '1px solid var(--border-light)',
-                        color: 'var(--text-primary)',
-                        minHeight: '120px',
-                        resize: 'vertical',
-                        fontFamily: 'inherit'
+                        background: 'transparent',
+                        border: '1px dashed var(--border-light)',
+                        color: 'var(--text-secondary)',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        marginTop: '0.5rem'
                     }}
-                />
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add a detail field
+                </button>
             </div>
+
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                 <button
