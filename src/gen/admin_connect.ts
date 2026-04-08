@@ -11,6 +11,7 @@ import { CreateRoleRequest, CreateRoleResponse, DeleteRoleRequest, DeleteRoleRes
 import { CreatePermissionRequest, CreatePermissionResponse, DeletePermissionRequest, DeletePermissionResponse, GetPermissionRequest, GetPermissionResponse, ListPermissionsRequest, ListPermissionsResponse, UpdatePermissionRequest, UpdatePermissionResponse } from "./permission_pb.js";
 import { CreateOrganizationRequest, CreateOrganizationResponse, DeleteOrganizationRequest, DeleteOrganizationResponse, GetOrganizationRequest, GetOrganizationResponse, ListOrganizationsRequest, ListOrganizationsResponse, UpdateOrganizationRequest, UpdateOrganizationResponse } from "./organization_pb.js";
 import { CreateProductRequest, CreateProductResponse, DeleteProductRequest, DeleteProductResponse, GetProductRequest, GetProductResponse, ListProductsRequest, ListProductsResponse, UpdateProductRequest, UpdateProductResponse } from "./product_pb.js";
+import { CreateProductCategoryRequest, CreateProductCategoryResponse, DeleteProductCategoryRequest, DeleteProductCategoryResponse, GetProductCategoryRequest, GetProductCategoryResponse, ListProductCategoriesRequest, ListProductCategoriesResponse, UpdateProductCategoryRequest, UpdateProductCategoryResponse } from "./product_category_pb.js";
 
 /**
  * @generated from service admin.AdminService
@@ -331,6 +332,51 @@ export const AdminService = {
       name: "ListProducts",
       I: ListProductsRequest,
       O: ListProductsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.CreateProductCategory
+     */
+    createProductCategory: {
+      name: "CreateProductCategory",
+      I: CreateProductCategoryRequest,
+      O: CreateProductCategoryResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.GetProductCategory
+     */
+    getProductCategory: {
+      name: "GetProductCategory",
+      I: GetProductCategoryRequest,
+      O: GetProductCategoryResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.UpdateProductCategory
+     */
+    updateProductCategory: {
+      name: "UpdateProductCategory",
+      I: UpdateProductCategoryRequest,
+      O: UpdateProductCategoryResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.DeleteProductCategory
+     */
+    deleteProductCategory: {
+      name: "DeleteProductCategory",
+      I: DeleteProductCategoryRequest,
+      O: DeleteProductCategoryResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc admin.AdminService.ListProductCategories
+     */
+    listProductCategories: {
+      name: "ListProductCategories",
+      I: ListProductCategoriesRequest,
+      O: ListProductCategoriesResponse,
       kind: MethodKind.Unary,
     },
   }
