@@ -1,8 +1,11 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import './MainLayout.css';
 
 const Sidebar: React.FC = () => {
+    const location = useLocation();
+    const [productsOpen, setProductsOpen] = useState(location.pathname.startsWith('/products'));
+
     return (
         <aside className="sidebar glass-panel">
             <div className="sidebar-logo">
@@ -23,13 +26,37 @@ const Sidebar: React.FC = () => {
                     <span className="nav-icon">👥</span>
                     Customers
                 </NavLink>
-                <NavLink
-                    to="/products"
-                    className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-                >
-                    <span className="nav-icon">📦</span>
-                    Products
-                </NavLink>
+
+                <div className="nav-group">
+                    <div
+                        className={`nav-link has-submenu ${productsOpen ? 'open' : ''} ${location.pathname.startsWith('/products') ? 'active' : ''}`}
+                        onClick={() => setProductsOpen(!productsOpen)}
+                    >
+                        <span className="nav-icon">📦</span>
+                        Products
+                        <span className="chevron">▶</span>
+                    </div>
+
+                    {productsOpen && (
+                        <div className="submenu">
+                            <NavLink
+                                to="/products"
+                                end
+                                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                            >
+                                <span className="nav-icon" style={{ fontSize: '1rem' }}>📋</span>
+                                Manage Products
+                            </NavLink>
+                            <NavLink
+                                to="/products/categories"
+                                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                            >
+                                <span className="nav-icon" style={{ fontSize: '1rem' }}>🏷️</span>
+                                Categories
+                            </NavLink>
+                        </div>
+                    )}
+                </div>
             </nav>
         </aside>
     );

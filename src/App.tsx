@@ -9,6 +9,10 @@ import NewProduct from './pages/NewProduct';
 import EditProduct from './pages/EditProduct';
 import NewCustomer from './pages/NewCustomer';
 import EditCustomer from './pages/EditCustomer';
+import ProductCategories from './pages/ProductCategories';
+import NewProductCategory from './pages/NewProductCategory';
+import EditProductCategory from './pages/EditProductCategory';
+
 
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -33,6 +37,12 @@ function App() {
               <Route path="/products/:id" element={<EditProduct />} />
               <Route path="/customers/new" element={<NewCustomer />} />
               <Route path="/customers/:id" element={<EditCustomer />} />
+
+              {/* Product Category Routes */}
+              <Route path="/products/categories" element={<ProductCategories />} />
+              <Route path="/products/categories/new" element={<NewProductCategory />} />
+              <Route path="/products/categories/:id" element={<EditProductCategory />} />
+
 
               <Route path="/dashboard" element={<Navigate to="/company" replace />} />
             </Route>

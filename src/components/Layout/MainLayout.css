@@ -66,6 +66,44 @@
     font-size: 1.25rem;
 }
 
+/* Submenu Styling */
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: 1.5rem;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.submenu .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+}
+
+.nav-link.has-submenu {
+    cursor: pointer;
+}
+
+.nav-link.has-submenu .chevron {
+    margin-left: auto;
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-link.has-submenu.open .chevron {
+    transform: rotate(90deg);
+}
+
+
 /* Main Content Area */
 .main-content {
     flex: 1;
