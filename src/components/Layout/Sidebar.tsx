@@ -54,9 +54,24 @@ const Sidebar: React.FC = () => {
                                 <span className="nav-icon" style={{ fontSize: '1rem' }}>🏷️</span>
                                 Categories
                             </NavLink>
+                            <NavLink
+                                to="/products/vendors"
+                                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                            >
+                                <span className="nav-icon" style={{ fontSize: '1rem' }}>🏢</span>
+                                Vendors
+                            </NavLink>
+                            <NavLink
+                                to="/products/suppliers"
+                                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                            >
+                                <span className="nav-icon" style={{ fontSize: '1rem' }}>🚚</span>
+                                Suppliers
+                            </NavLink>
                         </div>
                     )}
                 </div>
+
             </nav>
         </aside>
     );

@@ -12,6 +12,13 @@ import EditCustomer from './pages/EditCustomer';
 import ProductCategories from './pages/ProductCategories';
 import NewProductCategory from './pages/NewProductCategory';
 import EditProductCategory from './pages/EditProductCategory';
+import Vendors from './pages/Vendors';
+import NewVendor from './pages/NewVendor';
+import EditVendor from './pages/EditVendor';
+import Suppliers from './pages/Suppliers';
+import NewSupplier from './pages/NewSupplier';
+import EditSupplier from './pages/EditSupplier';
+
 
 
 import ProtectedRoute from './components/Auth/ProtectedRoute';
@@ -42,6 +49,17 @@ function App() {
               <Route path="/products/categories" element={<ProductCategories />} />
               <Route path="/products/categories/new" element={<NewProductCategory />} />
               <Route path="/products/categories/:id" element={<EditProductCategory />} />
+
+              {/* Vendor Routes */}
+              <Route path="/products/vendors" element={<Vendors />} />
+              <Route path="/products/vendors/new" element={<NewVendor />} />
+              <Route path="/products/vendors/:id" element={<EditVendor />} />
+
+              {/* Supplier Routes */}
+              <Route path="/products/suppliers" element={<Suppliers />} />
+              <Route path="/products/suppliers/new" element={<NewSupplier />} />
+              <Route path="/products/suppliers/:id" element={<EditSupplier />} />
+
 
 
               <Route path="/dashboard" element={<Navigate to="/company" replace />} />

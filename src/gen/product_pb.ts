@@ -55,6 +55,21 @@ export class Product extends Message<Product> {
    */
   additionalDetails: { [key: string]: string } = {};
 
+  /**
+   * @generated from field: int64 category_id = 10;
+   */
+  categoryId = protoInt64.zero;
+
+  /**
+   * @generated from field: int64 vendor_id = 11;
+   */
+  vendorId = protoInt64.zero;
+
+  /**
+   * @generated from field: string vendor_product_code = 12;
+   */
+  vendorProductCode = "";
+
   constructor(data?: PartialMessage<Product>) {
     super();
     proto3.util.initPartial(data, this);
@@ -72,6 +87,9 @@ export class Product extends Message<Product> {
     { no: 7, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 8, name: "deleted_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 9, name: "additional_details", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
+    { no: 10, name: "category_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 11, name: "vendor_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 12, name: "vendor_product_code", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Product {
@@ -115,6 +133,21 @@ export class CreateProductRequest extends Message<CreateProductRequest> {
    */
   additionalDetails: { [key: string]: string } = {};
 
+  /**
+   * @generated from field: int64 category_id = 5;
+   */
+  categoryId = protoInt64.zero;
+
+  /**
+   * @generated from field: int64 vendor_id = 6;
+   */
+  vendorId = protoInt64.zero;
+
+  /**
+   * @generated from field: string vendor_product_code = 7;
+   */
+  vendorProductCode = "";
+
   constructor(data?: PartialMessage<CreateProductRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -127,6 +160,9 @@ export class CreateProductRequest extends Message<CreateProductRequest> {
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "additional_details", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
+    { no: 5, name: "category_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 6, name: "vendor_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 7, name: "vendor_product_code", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateProductRequest {
@@ -286,6 +322,21 @@ export class UpdateProductRequest extends Message<UpdateProductRequest> {
    */
   additionalDetails: { [key: string]: string } = {};
 
+  /**
+   * @generated from field: int64 category_id = 6;
+   */
+  categoryId = protoInt64.zero;
+
+  /**
+   * @generated from field: int64 vendor_id = 7;
+   */
+  vendorId = protoInt64.zero;
+
+  /**
+   * @generated from field: string vendor_product_code = 8;
+   */
+  vendorProductCode = "";
+
   constructor(data?: PartialMessage<UpdateProductRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -299,6 +350,9 @@ export class UpdateProductRequest extends Message<UpdateProductRequest> {
     { no: 3, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "additional_details", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "scalar", T: 9 /* ScalarType.STRING */} },
+    { no: 6, name: "category_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 7, name: "vendor_id", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 8, name: "vendor_product_code", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateProductRequest {
